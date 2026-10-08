@@ -539,7 +539,7 @@ export default function App()
 
           {rol === 3 && (
             <TouchableOpacity
-              style={styles.button}
+              style={[styles.button, styles.botonSeparado]}
               onPress={() => setSoloPendientes(!soloPendientes)}
             >
               <Text style={styles.buttonText}>
@@ -718,6 +718,12 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 17,
     fontWeight: 'bold',
+  },
+
+  // Deja el mismo espacio que hay entre una tarjeta y otra
+  botonSeparado:
+  {
+    marginBottom: 18,
   },
 
   themeButton:
