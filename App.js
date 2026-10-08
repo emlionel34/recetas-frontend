@@ -21,8 +21,7 @@ import AppTitle from './components/AppTitle';
 import { pedir } from './services/api';
 import { temas } from './theme';
 
-export default function App()
-{
+export default function App() {
   // Referencia a la lista, para subir hasta arriba después de crear una receta
   const scrollRef = useRef(null);
 
@@ -61,13 +60,11 @@ export default function App()
   };
 
   // Cuando hay token, pide las recetas y los favoritos al servidor
-  useEffect(() =>
-  {
+  useEffect(() => {
     if (!token) return;
 
     const cargarDatos = async () => {
-      try
-      {
+      try {
         const recetasRespuesta = await pedir('/api/recipes', { token });
 
         if (recetasRespuesta.ok) {
@@ -81,9 +78,7 @@ export default function App()
             favoritosRespuesta.datos.map((receta) => receta.id_receta)
           );
         }
-      }
-      catch (error)
-      {
+      } catch (error) {
         console.log('ERROR AL CARGAR DATOS:', error);
       }
     };
@@ -113,10 +108,8 @@ export default function App()
   );
 
   // ---------- SESIÓN ----------
-  const iniciarSesion = async () =>
-  {
-    if (!correo || !contraseña)
-    {
+  const iniciarSesion = async () => {
+    if (!correo || !contraseña) {
       Alert.alert('Error', 'Completá el correo y la contraseña');
       return;
     }
@@ -129,39 +122,30 @@ export default function App()
         cuerpo: { correo, contraseña },
       });
 
-      if (!ok)
-      {
+      if (!ok) {
         Alert.alert('Error', datos.error || 'No se pudo iniciar sesión');
         return;
       }
 
-      if ([1, 2, 3].includes(datos.usuario.id_rol))
-      {
+      if ([1, 2, 3].includes(datos.usuario.id_rol)) {
         setToken(datos.token);
         setUsuarioLogueado(datos.usuario);
       }
-    }
-    catch (error)
-    {
+    } catch (error) {
       errorDeRed(error);
-    }
-    finally
-    {
+    } finally {
       setCargando(false);
     }
   };
 
   // Crea una cuenta nueva (el servidor siempre le pone rol 1)
-  const registrarse = async () =>
-  {
-    if (!nombreRegistro.trim() || !correo.trim() || !contraseña)
-    {
+  const registrarse = async () => {
+    if (!nombreRegistro.trim() || !correo.trim() || !contraseña) {
       Alert.alert('Error', 'Completá nombre, correo y contraseña');
       return;
     }
 
-    if (contraseña.length < 6)
-    {
+    if (contraseña.length < 6) {
       Alert.alert('Error', 'La contraseña debe tener al menos 6 caracteres');
       return;
     }
@@ -174,8 +158,7 @@ export default function App()
         cuerpo: { nombre: nombreRegistro, correo, contraseña },
       });
 
-      if (!ok)
-      {
+      if (!ok) {
         Alert.alert('Error', datos.error || 'No se pudo registrar');
         return;
       }
@@ -185,13 +168,9 @@ export default function App()
       setNombreRegistro('');
       setContraseña('');
       setModoRegistro(false);
-    }
-    catch (error)
-    {
+    } catch (error) {
       errorDeRed(error);
-    }
-    finally
-    {
+    } finally {
       setCargando(false);
     }
   };
@@ -209,8 +188,7 @@ export default function App()
   };
 
   // ---------- ADMINISTRACIÓN DE USUARIOS (solo rol 3) ----------
-  const abrirUsuarios = async () =>
-  {
+  const abrirUsuarios = async () => {
     try {
       const { ok, datos } = await pedir('/api/users', { token });
 
@@ -221,14 +199,12 @@ export default function App()
 
       setUsuarios(datos);
       setMostrandoUsuarios(true);
-    }
-    catch (error) {
+    } catch (error) {
       errorDeRed(error);
     }
   };
 
-  const cambiarRolUsuario = async (id_usuario, id_rol) =>
-  {
+  const cambiarRolUsuario = async (id_usuario, id_rol) => {
     try {
       const { ok, datos } = await pedir(`/api/users/${id_usuario}/rol`, {
         metodo: 'PUT',
@@ -244,20 +220,17 @@ export default function App()
       setUsuarios(
         usuarios.map((u) => (u.id_usuario === id_usuario ? datos.usuario : u))
       );
-    }
-    catch (error) {
+    } catch (error) {
       errorDeRed(error);
     }
   };
 
-  const eliminarUsuario = (usuario) =>
-  {
+  const eliminarUsuario = (usuario) => {
     Alert.alert(
       'Eliminar usuario',
       `¿Seguro que querés eliminar a ${usuario.nombre}?`,
       [
-        { text: 'Cancelar', style: 'cancel' },
-        {
+        { text: 'Cancelar', style: 'cancel' }, {
           text: 'Eliminar',
           style: 'destructive',
           onPress: async () => {
@@ -275,8 +248,7 @@ export default function App()
               setUsuarios(
                 usuarios.filter((u) => u.id_usuario !== usuario.id_usuario)
               );
-            }
-            catch (error) {
+            } catch (error) {
               errorDeRed(error);
             }
           },
@@ -287,8 +259,7 @@ export default function App()
 
   // ---------- FAVORITOS ----------
   // Agrega o quita una receta de favoritos (POST o DELETE)
-  const toggleFavorito = async (receta) =>
-  {
+  const toggleFavorito = async (receta) => {
     const esFavorito = favoritos.includes(receta.id_receta);
 
     try {
@@ -313,16 +284,14 @@ export default function App()
           ? favoritos.filter((id) => id !== receta.id_receta)
           : [...favoritos, receta.id_receta]
       );
-    }
-    catch (error) {
+    } catch (error) {
       errorDeRed(error);
     }
   };
 
   // ---------- RECETAS ----------
   // El administrador aprueba una receta pendiente
-  const aprobarReceta = async (receta) =>
-  {
+  const aprobarReceta = async (receta) => {
     try {
       const { ok, datos } = await pedir(
         `/api/recipes/${receta.id_receta}/aprobar`,
@@ -341,14 +310,12 @@ export default function App()
       );
 
       Alert.alert('Éxito', 'Receta aprobada');
-    }
-    catch (error) {
+    } catch (error) {
       errorDeRed(error);
     }
   };
 
-  const crearReceta = async () =>
-  {
+  const crearReceta = async () => {
     if (!nombreReceta || !descripcionReceta) {
       Alert.alert('Error', 'Completá el nombre y la preparación');
       return;
@@ -386,20 +353,17 @@ export default function App()
       setRecetas([datos.receta, ...recetas]);
       setMostrandoFormulario(false);
       scrollRef.current?.scrollTo({ y: 0, animated: true });
-    }
-    catch (error) {
+    } catch (error) {
       errorDeRed(error);
     }
   };
 
-  const editarReceta = (receta) =>
-  {
+  const editarReceta = (receta) => {
     setRecetaEditando(receta);
     setMostrandoEdicion(true);
   };
 
-  const actualizarReceta = async () =>
-  {
+  const actualizarReceta = async () => {
     if (!recetaEditando) return;
 
     if (!recetaEditando.nombre || !recetaEditando.descripcion) {
@@ -409,8 +373,7 @@ export default function App()
 
     try {
       const { ok, datos } = await pedir(
-        `/api/recipes/${recetaEditando.id_receta}`,
-        {
+        `/api/recipes/${recetaEditando.id_receta}`, {
           metodo: 'PUT',
           token,
           cuerpo: {
@@ -437,14 +400,12 @@ export default function App()
       setMostrandoEdicion(false);
 
       Alert.alert('Éxito', 'Receta actualizada correctamente');
-    }
-    catch (error) {
+    } catch (error) {
       errorDeRed(error);
     }
   };
 
-  const eliminarReceta = async (receta) =>
-  {
+  const eliminarReceta = async (receta) => {
     try {
       const { ok, datos } = await pedir(
         `/api/recipes/${receta.id_receta}`,
@@ -460,15 +421,13 @@ export default function App()
       setFavoritos(favoritos.filter((id) => id !== receta.id_receta));
 
       Alert.alert('Éxito', 'Receta eliminada correctamente');
-    }
-    catch (error) {
+    } catch (error) {
       errorDeRed(error);
     }
   };
 
   // ---------- PANTALLA CON USUARIO LOGUEADO ----------
-  if (usuarioLogueado)
-  {
+  if (usuarioLogueado) {
     const rol = usuarioLogueado.id_rol;
     const puedeCrear = rol === 2 || rol === 3;
 
@@ -668,8 +627,7 @@ export default function App()
 }
 
 const styles = StyleSheet.create({
-  container:
-  {
+  container: {
     flex: 1,
     width: '100%',
     maxWidth: 600,
@@ -681,15 +639,13 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
 
-  subtitle:
-  {
+  subtitle: {
     fontSize: 16,
     color: '#bbbbbb',
     marginBottom: 35,
   },
 
-  input:
-  {
+  input: {
     width: '100%',
     height: 50,
     backgroundColor: '#ffffff',
@@ -702,8 +658,7 @@ const styles = StyleSheet.create({
     borderColor: '#d9cdbb',
   },
 
-  button:
-  {
+  button: {
     width: '100%',
     height: 50,
     backgroundColor: '#e67e22',
@@ -713,21 +668,18 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 
-  buttonText:
-  {
+  buttonText: {
     color: '#ffffff',
     fontSize: 17,
     fontWeight: 'bold',
   },
 
   // Deja el mismo espacio que hay entre una tarjeta y otra
-  botonSeparado:
-  {
+  botonSeparado: {
     marginBottom: 18,
   },
 
-  themeButton:
-  {
+  themeButton: {
     alignSelf: 'center',
     backgroundColor: '#e67e22',
     paddingVertical: 8,
@@ -736,15 +688,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
-  themeButtonText:
-  {
+  themeButtonText: {
     color: '#ffffff',
     fontWeight: 'bold',
     fontSize: 13,
   },
 
-  footer:
-  {
+  footer: {
     width: '100%',
     flexDirection: 'row',
     gap: 12,
@@ -753,8 +703,7 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
 
-  footerButton:
-  {
+  footerButton: {
     flex: 1,
     backgroundColor: '#e67e22',
     paddingVertical: 13,
@@ -762,27 +711,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  footerButtonSalir:
-  {
+  footerButtonSalir: {
     backgroundColor: '#C0392B',
   },
 
-  footerButtonText:
-  {
+  footerButtonText: {
     color: '#ffffff',
     fontWeight: 'bold',
     fontSize: 14,
   },
 
-  homeText:
-  {
+  homeText: {
     color: '#ffffff',
     fontSize: 18,
     marginBottom: 20,
   },
 
-  sectionTitle:
-  {
+  sectionTitle: {
     width: '100%',
     fontSize: 22,
     fontWeight: 'bold',
