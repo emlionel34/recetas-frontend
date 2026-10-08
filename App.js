@@ -485,6 +485,8 @@ export default function App()
       <ScrollView
         ref={scrollRef}
         style={{ flex: 1, backgroundColor: tema.fondo }}
+        keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets
       >
         <View style={[styles.container, { backgroundColor: tema.fondo }]}>
           <StatusBar style={modoOscuro ? 'light' : 'dark'} />
@@ -640,6 +642,7 @@ export default function App()
       style={{ flex: 1, backgroundColor: tema.fondo }}
       contentContainerStyle={{ flexGrow: 1 }}
       keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets
     >
       <View style={[styles.container, { backgroundColor: tema.fondo }]}>
         <StatusBar style={modoOscuro ? 'light' : 'dark'} />
