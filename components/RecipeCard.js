@@ -191,9 +191,10 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
 
+  // La altura se calcula según el ancho (proporción 16:10), así se adapta a cualquier pantalla
   image: {
     width: '100%',
-    height: 140,
+    aspectRatio: 16 / 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
