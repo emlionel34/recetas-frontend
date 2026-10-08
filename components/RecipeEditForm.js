@@ -50,6 +50,10 @@ export default function RecipeEditForm({
         onChangeText={(texto) => setReceta({ ...receta, imagen: texto })}
       />
 
+      <Text style={[styles.ayuda, { color: tema.textoSuave }]}>
+        Pegá el enlace directo de la foto: tiene que empezar con https.
+      </Text>
+
       <TouchableOpacity style={styles.button} onPress={guardarCambios}>
         <Text style={styles.buttonText}>Guardar cambios</Text>
       </TouchableOpacity>
@@ -85,6 +89,12 @@ const styles = StyleSheet.create({
     color: '#222222',
     borderWidth: 1,
     borderColor: '#d9cdbb',
+  },
+
+  ayuda: {
+    fontSize: 12,
+    marginTop: -6,
+    marginBottom: 14,
   },
 
   inputGrande: {

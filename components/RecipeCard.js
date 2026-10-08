@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import {
   Image,
@@ -13,6 +13,13 @@ import { descargarPdf } from '../utils/recetaPdf';
 
 // Colores de fondo para las recetas que no tienen foto (según su id).
 const COLORES = ['#F8D9B0', '#F5C6A5', '#D9E8C4', '#F2D7D5', '#E8DAB2'];
+
+// Un texto se considera largo si tiene muchos caracteres o muchas líneas.
+const esLargo = (texto) =>
+  Boolean(texto) && (texto.length > 140 || texto.split('\n').length > 3);
+
+// Cantidad de líneas que se ven cuando la tarjeta está recortada.
+const LINEAS_RECORTADAS = 3;
 
 // Tarjeta visual de una receta.
 // Recibe por props los datos, si es favorita, si se puede modificar y el tema de colores.
@@ -31,6 +38,16 @@ export default function RecipeCard({
   const [falloImagen, setFalloImagen] = useState(false);
   const mostrarFoto = receta.imagen && !falloImagen;
 
+  // Si cambia el enlace de la imagen (por ejemplo al editar), se vuelve a intentar cargarla
+  useEffect(() => {
+    setFalloImagen(false);
+  }, [receta.imagen]);
+
+  // La tarjeta muestra pocas líneas y se puede expandir con "Ver más"
+  const [expandida, setExpandida] = useState(false);
+  const hayMas = esLargo(receta.ingredientes) || esLargo(receta.descripcion);
+  const lineas = expandida ? undefined : LINEAS_RECORTADAS;
+
   return (
     <View style={[styles.card, { backgroundColor: tema.tarjeta }]}>
 
@@ -39,6 +56,7 @@ export default function RecipeCard({
           <Image
             source={{ uri: receta.imagen }}
             style={styles.image}
+            resizeMode="cover"
             onError={() => setFalloImagen(true)}
           />
         ) : (
@@ -53,6 +71,12 @@ export default function RecipeCard({
               style={styles.logoRespaldo}
               resizeMode="contain"
             />
+
+            {receta.imagen && falloImagen ? (
+              <Text style={styles.avisoImagen}>
+                No se pudo cargar la imagen
+              </Text>
+            ) : null}
           </View>
         )}
 
@@ -81,7 +105,10 @@ export default function RecipeCard({
             <Text style={[styles.label, { color: tema.tarjetaTexto }]}>
               Ingredientes
             </Text>
-            <Text style={[styles.description, { color: tema.tarjetaDescripcion }]}>
+            <Text
+              style={[styles.description, { color: tema.tarjetaDescripcion }]}
+              numberOfLines={lineas}
+            >
               {receta.ingredientes}
             </Text>
           </View>
@@ -90,9 +117,20 @@ export default function RecipeCard({
         <Text style={[styles.label, { color: tema.tarjetaTexto }]}>
           Preparación
         </Text>
-        <Text style={[styles.description, { color: tema.tarjetaDescripcion }]}>
+        <Text
+          style={[styles.description, { color: tema.tarjetaDescripcion }]}
+          numberOfLines={lineas}
+        >
           {receta.descripcion}
         </Text>
+
+        {hayMas && (
+          <TouchableOpacity onPress={() => setExpandida(!expandida)}>
+            <Text style={styles.verMas}>
+              {expandida ? 'Ver menos' : 'Ver más'}
+            </Text>
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity
           style={styles.pdfButton}
@@ -198,6 +236,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 8,
     marginBottom: 2,
+  },
+
+  verMas: {
+    color: '#e67e22',
+    fontWeight: 'bold',
+    fontSize: 15,
+    marginTop: 8,
+  },
+
+  avisoImagen: {
+    position: 'absolute',
+    bottom: 6,
+    color: '#7a5a3a',
+    fontSize: 12,
   },
 
   badge: {
