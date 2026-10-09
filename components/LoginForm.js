@@ -3,6 +3,14 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import AppTitle from './AppTitle';
 import { temas } from '../theme';
 
+// Servicios externos para entrar. Para sumar uno nuevo, se agrega una línea acá.
+const SERVICIOS = [
+  { id: 'google', nombre: 'Google', color: '#DB4437' },
+  { id: 'facebook', nombre: 'Facebook', color: '#1877F2' },
+  { id: 'discord', nombre: 'Discord', color: '#5865F2' },
+  { id: 'github', nombre: 'GitHub', color: '#24292F' },
+];
+
 // Pantalla de acceso: sirve para iniciar sesión y para registrarse.
 // No habla con el servidor: recibe las funciones y los datos desde App.js por props.
 export default function LoginForm({
@@ -16,6 +24,7 @@ export default function LoginForm({
   setContraseña,
   cargando,
   onEnviar,
+  onEntrarConServicio,
   tema = temas.oscuro,
 }) {
   return (
@@ -67,6 +76,23 @@ export default function LoginForm({
         </Text>
       </TouchableOpacity>
 
+      <Text style={[styles.separador, { color: tema.textoSuave }]}>
+        o continuá con
+      </Text>
+
+      {SERVICIOS.map((servicio) => (
+        <TouchableOpacity
+          key={servicio.id}
+          style={[styles.botonServicio, { backgroundColor: servicio.color }]}
+          onPress={() => onEntrarConServicio(servicio.id)}
+          disabled={cargando}
+        >
+          <Text style={styles.botonTexto}>
+            Continuar con {servicio.nombre}
+          </Text>
+        </TouchableOpacity>
+      ))}
+
       <TouchableOpacity onPress={() => setModoRegistro(!modoRegistro)}>
         <Text style={styles.enlace}>
           {modoRegistro
@@ -116,6 +142,21 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 17,
     fontWeight: 'bold',
+  },
+
+  separador: {
+    fontSize: 14,
+    marginTop: 22,
+    marginBottom: 12,
+  },
+
+  botonServicio: {
+    width: '100%',
+    height: 48,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
   },
 
   enlace: {
